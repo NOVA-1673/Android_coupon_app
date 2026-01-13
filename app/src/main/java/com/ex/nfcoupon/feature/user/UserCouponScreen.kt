@@ -5,7 +5,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import com.ex.nfcoupon.feature.Data.FlagStore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -13,6 +15,18 @@ fun UserCouponScreen(onBack: () -> Unit) {
     // MVP: 로컬 상태로만(나중에 Room/서버로 교체)
     var stamps by remember { mutableIntStateOf(0) }
     val canRedeem = stamps >= 10
+
+    val view = LocalView.current
+
+    // 화면 들어오면 ready=true, 나가면 ready=false
+    DisposableEffect(Unit) {
+        FlagStore.setReady(true)
+        view.keepScreenOn = true
+        onDispose {
+            FlagStore.setReady(false)
+            view.keepScreenOn = false
+        }
+    }
 
     Scaffold(
         topBar = {
